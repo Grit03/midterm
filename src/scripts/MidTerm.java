@@ -16,6 +16,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
+import org.snu.ids.kkma.index.Keyword;
+import org.snu.ids.kkma.index.KeywordExtractor;
+import org.snu.ids.kkma.index.KeywordList;
 
 
 public class MidTerm {
@@ -31,18 +34,43 @@ public class MidTerm {
 		File file = new File(input_path);
 		org.jsoup.nodes.Document indexXmlDoc = Jsoup.parse(file, "UTF-8", "", Parser.xmlParser());
 		
+		String[] queryKeyword;
 		
+		
+		// query 분석
+		KeywordExtractor ke = new KeywordExtractor();
+		KeywordList kl = ke.extractKeyword(query_text, true);
+		queryKeyword = new String[kl.size()];
+		for(int i=0; i<kl.size(); i++) {
+			Keyword kwrd = kl.get(i);
+			queryKeyword[i] = kwrd.getString();
+		}
 		
 		
 		// body 내용 하나씩 읽어와서 형태소 분석하고 body 안의 내용 바꾼다.
 		Elements docDataList = indexXmlDoc.select("doc");
+		String[] title = new String[docDataList.size()];
+
 		for (int i = 0; i < docDataList.size(); i++) {
 			Element doc = docDataList.get(i);
-			System.out.println(doc.getElementsByTag("title").text());
+			title[i] = doc.getElementsByTag("title").text();
+		}
+		
+		Elements bodyDataList = indexXmlDoc.select("body");
+		for (int i = 0; i < bodyDataList.size(); i++) {
+			String bodyElementText = bodyDataList.get(i).text();
+			int count = (int)bodyDataList.size()/30;
+			
+			
+			for(int j= 0; j< count ;j = j++) {
+				String trim = bodyElementText.substring(0,2);
+				System.out.println(trim);
+			}
+			
 		}
 		
 		String[] str = new String[docDataList.size()];
-		
+		// https://github.com/everglow03/midterm
 		
 	}
 }
